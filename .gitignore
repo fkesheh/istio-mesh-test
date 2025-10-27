@@ -1,0 +1,12 @@
+# Istio downloads
+istio-*/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
