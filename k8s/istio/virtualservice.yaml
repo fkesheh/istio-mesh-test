@@ -23,3 +23,29 @@ spec:
         host: httpbin.org
         port:
           number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jsonplaceholder-intercept
+  namespace: istio-test
+spec:
+  hosts:
+  - jsonplaceholder.typicode.com
+  http:
+  # Route 1: If X-Intercept header is present, route to mitmproxy
+  - match:
+    - headers:
+        X-Intercept:
+          exact: "true"
+    route:
+    - destination:
+        host: mitmproxy.istio-test.svc.cluster.local
+        port:
+          number: 8080
+  # Route 2: Default route to external jsonplaceholder.typicode.com
+  - route:
+    - destination:
+        host: jsonplaceholder.typicode.com
+        port:
+          number: 80

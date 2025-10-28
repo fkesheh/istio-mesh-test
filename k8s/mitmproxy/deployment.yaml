@@ -16,28 +16,36 @@ spec:
         app: mitmproxy
     spec:
       containers:
-      - name: mock-service
-        image: python:3.11-slim
+      - name: mitmproxy
+        image: mitmproxy/mitmproxy:latest
         command:
-          - python3
-          - /scripts/server.py
+          - mitmdump
+          - --mode
+          - regular
+          - --showhost
+          - --listen-host
+          - "0.0.0.0"
+          - --listen-port
+          - "8080"
+          - -s
+          - /scripts/proxy_addon.py
         ports:
         - containerPort: 8080
           protocol: TCP
         volumeMounts:
-        - name: mock-service-script
+        - name: mitmproxy-script
           mountPath: /scripts
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
             memory: "256Mi"
             cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
       volumes:
-      - name: mock-service-script
+      - name: mitmproxy-script
         configMap:
-          name: mock-service-script
+          name: mitmproxy-script
           defaultMode: 0755
 ---
 apiVersion: v1

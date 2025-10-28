@@ -16,9 +16,9 @@ fi
 echo "Using test pod: $TEST_POD"
 echo ""
 
-# Test 1: Request WITH intercept header (should go to mitmproxy)
+# Test 1: httpbin.org WITH intercept header (should go to mitmproxy)
 echo "=========================================="
-echo "Test 1: Request WITH X-Intercept header"
+echo "Test 1: httpbin.org WITH X-Intercept header"
 echo "Expected: Response from mitmproxy with 'intercepted: true'"
 echo "=========================================="
 kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
@@ -29,9 +29,9 @@ kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
 echo ""
 echo ""
 
-# Test 2: Request WITHOUT intercept header (should go to external API)
+# Test 2: httpbin.org WITHOUT intercept header (should go to external API)
 echo "=========================================="
-echo "Test 2: Request WITHOUT X-Intercept header"
+echo "Test 2: httpbin.org WITHOUT X-Intercept header"
 echo "Expected: Real response from httpbin.org"
 echo "=========================================="
 kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
@@ -42,11 +42,37 @@ kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
 echo ""
 echo ""
 
-# Test 3: Check mitmproxy logs
+# Test 3: jsonplaceholder.typicode.com WITH intercept header (should go to mitmproxy)
 echo "=========================================="
-echo "Test 3: Mitmproxy logs (recent requests)"
+echo "Test 3: jsonplaceholder.typicode.com WITH X-Intercept header"
+echo "Expected: Response from mitmproxy with 'intercepted: true'"
 echo "=========================================="
-kubectl logs -n istio-test -l app=mitmproxy --tail=20
+kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
+    curl -s -H "X-Intercept: true" http://jsonplaceholder.typicode.com/todos/1 | jq . || \
+    kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
+    curl -s -H "X-Intercept: true" http://jsonplaceholder.typicode.com/todos/1
+
+echo ""
+echo ""
+
+# Test 4: jsonplaceholder.typicode.com WITHOUT intercept header (should go to external API)
+echo "=========================================="
+echo "Test 4: jsonplaceholder.typicode.com WITHOUT X-Intercept header"
+echo "Expected: Real response from jsonplaceholder.typicode.com"
+echo "=========================================="
+kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
+    curl -s http://jsonplaceholder.typicode.com/todos/1 | jq . || \
+    kubectl exec -n istio-test "$TEST_POD" -c test-service -- \
+    curl -s http://jsonplaceholder.typicode.com/todos/1
+
+echo ""
+echo ""
+
+# Test 5: Check mitmproxy logs
+echo "=========================================="
+echo "Test 5: Mitmproxy logs (recent requests)"
+echo "=========================================="
+kubectl logs -n istio-test -l app=mitmproxy --tail=100
 
 echo ""
 echo "=========================================="

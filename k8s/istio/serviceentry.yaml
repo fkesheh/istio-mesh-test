@@ -15,3 +15,21 @@ spec:
     protocol: HTTPS
   location: MESH_EXTERNAL
   resolution: DNS
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: jsonplaceholder-external
+  namespace: istio-test
+spec:
+  hosts:
+  - jsonplaceholder.typicode.com
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS
