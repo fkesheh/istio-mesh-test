@@ -17,12 +17,12 @@ spec:
         host: mitmproxy.istio-test.svc.cluster.local
         port:
           number: 8080
-  # Route 2: Default route to external httpbin.org
+  # Route 2: Default route to external httpbin.org with TLS origination
   - route:
     - destination:
         host: httpbin.org
         port:
-          number: 80
+          number: 443
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -43,9 +43,9 @@ spec:
         host: mitmproxy.istio-test.svc.cluster.local
         port:
           number: 8080
-  # Route 2: Default route to external jsonplaceholder.typicode.com
+  # Route 2: Default route to external jsonplaceholder.typicode.com with TLS origination
   - route:
     - destination:
         host: jsonplaceholder.typicode.com
         port:
-          number: 80
+          number: 443

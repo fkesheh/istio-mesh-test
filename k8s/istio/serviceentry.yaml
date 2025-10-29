@@ -12,7 +12,8 @@ spec:
     protocol: HTTP
   - number: 443
     name: https
-    protocol: HTTPS
+    protocol: HTTP
+    targetPort: 443
   location: MESH_EXTERNAL
   resolution: DNS
 ---
@@ -30,6 +31,7 @@ spec:
     protocol: HTTP
   - number: 443
     name: https
-    protocol: HTTPS
+    protocol: HTTP
+    targetPort: 443
   location: MESH_EXTERNAL
   resolution: DNS

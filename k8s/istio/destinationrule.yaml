@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: httpbin-tls-origination
+  namespace: istio-test
+spec:
+  host: httpbin.org
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: jsonplaceholder-tls-origination
+  namespace: istio-test
+spec:
+  host: jsonplaceholder.typicode.com
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
