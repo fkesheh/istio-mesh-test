@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""Minimal mitmproxy addon to handle httpbin.org with custom response."""
+from mitmproxy import http, ctx
+import json
+
+def request(flow: http.HTTPFlow) -> None:
+    """Send a custom reply for specific domains."""
+
+    # Log full request details
+    ctx.log.info("=" * 80)
+    ctx.log.info(f"REQUEST: {flow.request.method} {flow.request.pretty_url}")
+    ctx.log.info(f"Headers:")
+    for name, value in flow.request.headers.items():
+        ctx.log.info(f"  {name}: {value}")
+    ctx.log.info("=" * 80)
+
+    # Intercept httpbin.org
+    if "httpbin.org" in flow.request.pretty_host:
+        mock_response = {
+            "intercepted": True,
+            "message": "Response from mitmproxy!",
+            "service": "httpbin",
+            "url": flow.request.pretty_url,
+            "method": flow.request.method,
+            "headers": dict(flow.request.headers)
+        }
+
+        flow.response = http.Response.make(
+            200,
+            json.dumps(mock_response, indent=2).encode(),
+            {"Content-Type": "application/json", "X-Proxied-By": "mitmproxy"}
+        )
+        ctx.log.info(f"✓ Sent custom response for httpbin.org")
+
+    # Intercept jsonplaceholder.typicode.com
+    elif "jsonplaceholder.typicode.com" in flow.request.pretty_host:
+        mock_response = {
+            "intercepted": True,
+            "message": "Response from mitmproxy!",
+            "service": "jsonplaceholder",
+            "url": flow.request.pretty_url,
+            "method": flow.request.method,
+            "data": {
+                "userId": 1,
+                "id": 1,
+                "title": "Mock data from mitmproxy",
+                "completed": False
+            }
+        }
+
+        flow.response = http.Response.make(
+            200,
+            json.dumps(mock_response, indent=2).encode(),
+            {"Content-Type": "application/json", "X-Proxied-By": "mitmproxy"}
+        )
+        ctx.log.info(f"✓ Sent custom response for jsonplaceholder.typicode.com")
+
+    # Intercept graph.facebook.com
+    elif "graph.facebook.com" in flow.request.pretty_host:
+        mock_response = {
+            "intercepted": True,
+            "message": "Response from mitmproxy!",
+            "service": "facebook-graph",
+            "url": flow.request.pretty_url,
+            "method": flow.request.method,
+            "data": {
+                "id": "123456789",
+                "name": "Mock User",
+                "email": "mock@example.com"
+            }
+        }
+
+        flow.response = http.Response.make(
+            200,
+            json.dumps(mock_response, indent=2).encode(),
+            {"Content-Type": "application/json", "X-Proxied-By": "mitmproxy"}
+        )
+        ctx.log.info(f"✓ Sent custom response for graph.facebook.com")

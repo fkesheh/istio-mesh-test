@@ -49,3 +49,29 @@ spec:
         host: jsonplaceholder.typicode.com
         port:
           number: 443
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: facebook-graph-intercept
+  namespace: istio-test
+spec:
+  hosts:
+  - graph.facebook.com
+  http:
+  # Route 1: If X-Intercept header is present, route to mitmproxy
+  - match:
+    - headers:
+        X-Intercept:
+          exact: "true"
+    route:
+    - destination:
+        host: mitmproxy.istio-test.svc.cluster.local
+        port:
+          number: 8080
+  # Route 2: Default route to external graph.facebook.com with TLS origination
+  - route:
+    - destination:
+        host: graph.facebook.com
+        port:
+          number: 443

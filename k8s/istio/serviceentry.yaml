@@ -35,3 +35,22 @@ spec:
     targetPort: 443
   location: MESH_EXTERNAL
   resolution: DNS
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: facebook-graph-external
+  namespace: istio-test
+spec:
+  hosts:
+  - graph.facebook.com
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  - number: 443
+    name: https
+    protocol: HTTP
+    targetPort: 443
+  location: MESH_EXTERNAL
+  resolution: DNS
